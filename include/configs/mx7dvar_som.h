@@ -130,8 +130,9 @@
 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
 	"mmcblk=0\0" \
 	"mmcautodetect=yes\0" \
-	"mmcbootpart=1\0" \
+	"mmcbootpart=2\0" \
 	"mmcrootpart=2\0" \
+	"bootdir=boot\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 		"root=/dev/mmcblk${mmcblk}p${mmcrootpart} rootwait rw\0 " \
 	"loadbootenv=" \
@@ -143,7 +144,7 @@
 	"bootscript=echo Running bootscript from mmc ...; " \
 		"source\0" \
 	"loadimage=load mmc ${mmcdev}:${mmcbootpart} ${loadaddr} ${bootdir}/${image}\0" \
-	"loadfdt=run findfdt; " \
+	"loadfdt=" \
 		"echo fdt_file=${fdt_file}; " \
 		"load mmc ${mmcdev}:${mmcbootpart} ${fdt_addr} ${bootdir}/${fdt_file}\0" \
 	"mmcboot=echo Booting from mmc ...; " \
@@ -193,11 +194,9 @@
 		"else " \
 			"if run loadimage; then " \
 				"run mmcboot; " \
-			"else " \
-				"run netboot; " \
 			"fi; " \
 		"fi; " \
-	"else run netboot; fi"
+	"fi"
 #endif
 
 #define OPT_ENV_SETTINGS \
@@ -211,7 +210,7 @@
 	"boot_fdt=try\0" \
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
-	"fdt_file=undefined\0" \
+	"fdt_file=linux.dtb\0" \
 	"fdt_addr=0x83000000\0" \
 	"panel=VAR-WVGA-LCD\0" \
 	"splashsourceauto=yes\0" \
@@ -223,54 +222,7 @@
 	"ip_dyn=yes\0" \
 	"use_m4=no\0" \
 	"m4bootdata="__stringify(CONFIG_SYS_AUXCORE_BOOTDATA)"\0" \
-	"m4boot=if run loadm4image; then dcache flush; bootaux ${m4bootdata}; fi\0" \
-	"netargs=setenv bootargs console=${console},${baudrate} " \
-		"root=/dev/nfs rw " \
-		"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-	"netboot=echo Booting from net ...; " \
-		"run netargs; " \
-		"run optargs; " \
-		"if test ${ip_dyn} = yes; then " \
-			"setenv get_cmd dhcp; " \
-		"else " \
-			"setenv get_cmd tftp; " \
-		"fi; " \
-		"${get_cmd} ${image}; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"run findfdt; " \
-			"echo fdt_file=${fdt_file}; " \
-			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
-				"bootz ${loadaddr} - ${fdt_addr}; " \
-			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
-			"fi; " \
-		"else " \
-			"bootz; " \
-		"fi;\0" \
-	"findfdt="\
-		"if test $fdt_file = undefined; then " \
-			"if test $som_rev = EMMC; then " \
-				"if test ${use_m4} = yes; then " \
-					"setenv fdt_file imx7d-var-som-emmc-m4.dtb; " \
-				"else " \
-					"setenv fdt_file imx7d-var-som-emmc.dtb; " \
-				"fi; " \
-			"fi; " \
-			"if test $som_rev = NAND; then " \
-				"if test ${use_m4} = yes; then " \
-					"setenv fdt_file imx7d-var-som-nand-m4.dtb; " \
-				"else " \
-					"setenv fdt_file imx7d-var-som-nand.dtb; " \
-				"fi; " \
-			"fi; " \
-			"if test $fdt_file = undefined; then " \
-				"echo WARNING: Could not determine dtb to use; " \
-			"fi; " \
-		"fi;\0"
+	"m4boot=if run loadm4image; then dcache flush; bootaux ${m4bootdata}; fi\0"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
