@@ -134,7 +134,8 @@
 	"mmcrootpart=2\0" \
 	"bootdir=boot\0" \
 	"mmcargs=setenv bootargs console=${console},${baudrate} " \
-		"root=/dev/mmcblk${mmcblk}p${mmcrootpart} rootwait rw\0 " \
+		"root=/dev/mmcblk${mmcblk}p${mmcrootpart} rootfstype=ext4 rootwait rw " \
+		"no_console_suspend=1 vt.global_cursor_default=0\0 " \
 	"loadbootenv=" \
 		"load mmc ${mmcdev}:${mmcbootpart} ${loadaddr} ${bootdir}/${bootenv}\0" \
 	"importbootenv=echo Importing environment from mmc ...; " \
