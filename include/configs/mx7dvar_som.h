@@ -133,7 +133,7 @@
 	"mmcbootpart=2\0" \
 	"mmcrootpart=2\0" \
 	"bootdir=boot\0" \
-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
+	"mmcargs=setenv bootargs console=${console},${baudrate} coherent_pool=2304K" \
 		"root=/dev/mmcblk${mmcblk}p${mmcrootpart} rootfstype=ext4 rootwait rw " \
 		"no_console_suspend=1 vt.global_cursor_default=0\0 " \
 	"loadbootenv=" \
