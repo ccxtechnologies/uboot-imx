@@ -289,21 +289,6 @@ size_t display_count = ARRAY_SIZE(displays);
 #endif /* CONFIG_VIDEO_MXS */
 
 #ifdef CONFIG_SPLASH_SCREEN
-static void set_splashsource_to_boot_rootfs(void)
-{
-	if (!check_env("splashsourceauto", "yes"))
-		return;
-
-#ifdef CONFIG_NAND_BOOT
-	setenv("splashsource", "nand");
-#else
-	if (mmc_get_env_dev() == 0)
-		setenv("splashsource", "sd");
-	else if (mmc_get_env_dev() == 1)
-		setenv("splashsource", "emmc");
-#endif
-}
-
 int splash_screen_prepare(void)
 {
 	int ret=0;
@@ -337,8 +322,6 @@ int splash_screen_prepare(void)
 			.ubivol = "ubi0:rootfs",
 		},
 	};
-
-	set_splashsource_to_boot_rootfs();
 
 	ret = splash_source_load(var_splash_locations,
 			ARRAY_SIZE(var_splash_locations));
