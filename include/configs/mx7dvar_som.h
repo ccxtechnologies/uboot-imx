@@ -194,6 +194,31 @@
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 #endif
 
+/* NOTE: These env settings are just in case the fat12 boot partition
+ * is coruppted, otherwise uboot-env.bin is used instead. */
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+		"fdtaddr=0x83000000\0" \
+		"fdtfile=/boot/linux.dtb\0" \
+		"kernelfile=/boot/zImage\0" \
+		"console=ttymxc0\0" \
+		"mmcdev=0\0" \
+		"mmcrootpart=2\0" \
+		"loadfdt=ext4load mmc ${mmcdev}:${mmcrootpart} ${fdtaddr} ${fdtfile}\0" \
+		"loadkernel=ext4load mmc ${mmcdev}:${mmcrootpart} ${loadaddr} ${kernelfile}\0" \
+		"loadall=mmc dev ${mmcdev} && mmc rescan && run loadkernel && run loadfdt\0" \
+		"bootargs=rootwait\0" \
+		"setconsoleargs=setenv bootargs ${bootargs} console=${console},${baudrate}\0" \
+		"setfsargs=setenv bootargs ${bootargs} root=/dev/mmcblk${mmcdev}p${mmcrootpart} rootfstype=ext4 rw\0" \
+		"setbootargs=run setconsoleargs && run setfsargs && echo Set bootargs to ${bootargs}...\0" \
+		"bootkernel=bootz ${loadaddr} - ${fdtaddr}\0"
+
+#define CONFIG_BOOTCOMMAND \
+		"echo DEFAULT BOOT !! BOOT DRIVE IS CORRUPTED !!" \
+		" && run loadall"\
+		" && run setbootargs"\
+		" && run bootkernel"
+
 /* MMC Config */
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define CONFIG_SYS_MMC_ENV_DEV		0	/* USDHC1 */
