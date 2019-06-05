@@ -258,8 +258,12 @@ void do_enable_parallel_lcd(struct display_info_t const *dev)
 	imx_iomux_v3_setup_multiple_pads(pwm_pads, ARRAY_SIZE(pwm_pads));
 
 	/* Set Brightness to high */
-	gpio_request(IMX_GPIO_NR(1, 2), "lcd_backlight");
-	gpio_direction_output(IMX_GPIO_NR(1, 2) , 1);
+	gpio_request(IMX_GPIO_NR(1, 11), "lcd_backlight");
+	gpio_direction_output(IMX_GPIO_NR(1, 11) , 1);
+
+	/* Enable Screen */
+	gpio_request(IMX_GPIO_NR(2, 28), "lcd_enable");
+	gpio_direction_output(IMX_GPIO_NR(2, 28) , 1);
 }
 
 #define MHZ2PS(f)	(1000000/(f))
