@@ -258,8 +258,12 @@ void do_enable_parallel_lcd(struct display_info_t const *dev)
 	imx_iomux_v3_setup_multiple_pads(pwm_pads, ARRAY_SIZE(pwm_pads));
 
 	/* Set Brightness to high */
-	gpio_request(IMX_GPIO_NR(1, 2), "lcd_backlight");
-	gpio_direction_output(IMX_GPIO_NR(1, 2) , 1);
+	gpio_request(IMX_GPIO_NR(1, 11), "lcd_backlight");
+	gpio_direction_output(IMX_GPIO_NR(1, 11) , 1);
+
+	/* Enable Screen */
+	gpio_request(IMX_GPIO_NR(2, 28), "lcd_enable");
+	gpio_direction_output(IMX_GPIO_NR(2, 28) , 1);
 }
 
 #define MHZ2PS(f)	(1000000/(f))
@@ -271,16 +275,16 @@ struct display_info_t const displays[] = {{
 	.detect = NULL,
 	.enable = do_enable_parallel_lcd,
 	.mode = {
-		.name		= "VAR-WVGA-LCD",
-		.xres		= 800,
-		.yres		= 480,
-		.pixclock	= MHZ2PS(30),
-		.left_margin	= 40,
-		.right_margin	= 40,
-		.upper_margin	= 29,
-		.lower_margin	= 13,
-		.hsync_len	= 48,
-		.vsync_len	= 3,
+		.name		= "CCX-TRX-LCD",
+		.xres		= 1024,
+		.yres		= 768,
+		.pixclock	= MHZ2PS(65),
+		.left_margin	= 24,
+		.right_margin	= 160,
+		.upper_margin	= 3,
+		.lower_margin	= 29,
+		.hsync_len	= 126,
+		.vsync_len	= 6,
 		.sync		= FB_SYNC_CLK_LAT_FALL,
 		.vmode		= FB_VMODE_NONINTERLACED
 	}
@@ -289,21 +293,6 @@ size_t display_count = ARRAY_SIZE(displays);
 #endif /* CONFIG_VIDEO_MXS */
 
 #ifdef CONFIG_SPLASH_SCREEN
-static void set_splashsource_to_boot_rootfs(void)
-{
-	if (!env_check("splashsourceauto", "yes"))
-		return;
-
-#ifdef CONFIG_NAND_BOOT
-	env_set("splashsource", "nand");
-#else
-	if (mmc_get_env_dev() == 0)
-		env_set("splashsource", "sd");
-	else if (mmc_get_env_dev() == 1)
-		env_set("splashsource", "emmc");
-#endif
-}
-
 int splash_screen_prepare(void)
 {
 	int ret=0;
@@ -337,8 +326,6 @@ int splash_screen_prepare(void)
 			.ubivol = "ubi0:rootfs",
 		},
 	};
-
-	set_splashsource_to_boot_rootfs();
 
 	ret = splash_source_load(var_splash_locations,
 			ARRAY_SIZE(var_splash_locations));
